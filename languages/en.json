@@ -1,0 +1,7 @@
+{
+    "welcome": "Welcome to Quiz Bot! Select an option to continue.",
+    "start_quiz": "Start Quiz",
+    "create_quiz": "Create Quiz",
+    "question_prompt": "Question: {question}",
+    "no_quiz_available": "No quizzes are available at the moment."
+}
