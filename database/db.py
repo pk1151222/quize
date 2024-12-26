@@ -1,34 +1,7 @@
 import sqlite3
+from config.settings import DB_PATH
 
-def connect_db():
-    conn = sqlite3.connect('data/db.sqlite3')
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
     return conn
-
-def setup_db():
-    conn = connect_db()
-    cursor = conn.cursor()
-    
-    # Users Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        user_id INTEGER PRIMARY KEY,
-        username TEXT,
-        language TEXT DEFAULT 'en',
-        score INTEGER DEFAULT 0
-    )
-    """)
-
-    # Quizzes Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS quizzes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        question TEXT,
-        options TEXT,
-        answer INTEGER,
-        difficulty TEXT,
-        subject TEXT
-    )
-    """)
-    
-    conn.commit()
-    conn.close()
