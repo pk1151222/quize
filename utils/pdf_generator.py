@@ -1,26 +1,14 @@
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from database.db import connect_db
-import os
+from fpdf import FPDF
 
-def generate_pdf(user_id):
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT username, score FROM users WHERE user_id = ?", (user_id,))
-    user_data = cursor.fetchone()
-    conn.close()
+def generate_pdf_report(user_id, scores):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Quiz Report", ln=True, align='C')
 
-    if not user_data:
-        return None
+    for subject, score in scores.items():
+        pdf.cell(200, 10, txt=f"{subject}: {score}", ln=True, align='L')
 
-    username, score = user_data
-    pdf_path = f"data/reports/report_{user_id}.pdf"
-
-    os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
-
-    c = canvas.Canvas(pdf_path, pagesize=letter)
-    c.drawString(100, 750, f"Quiz Report for {username or 'Anonymous'}")
-    c.drawString(100, 730, f"Total Score: {score}")
-    c.save()
-
-    return pdf_path
+    report_path = f"data/reports/{user_id}_report.pdf"
+    pdf.output(report_path)
+    return report_path
