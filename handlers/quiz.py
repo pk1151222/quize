@@ -1,35 +1,21 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from database.db import connect_db
-from auto_generate.generator import generate_static_question
+from telegram import Update
+from telegram.ext import ContextTypes
+from utils.helper import load_language
+from database.models import get_quiz_questions
 
-def start_quiz(update, context):
-    user_id = update.message.from_user.id
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM quizzes ORDER BY RANDOM() LIMIT 1")
-    quiz = cursor.fetchone()
-    conn.close()
+async def handle_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    language = load_language(user_id)
+    questions = get_quiz_questions()
 
-    if quiz:
-        question, options, answer, difficulty, subject = quiz[1:6]
-        options = options.split(",")
-        
-        keyboard = [
-            [InlineKeyboardButton(option, callback_data=f"quiz_{i}") for i, option in enumerate(options)]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
+    if not questions:
+        await update.callback_query.message.reply_text(language["no_quiz_available"])
+        return
 
-        context.user_data["quiz_answer"] = answer
-        update.message.reply_text(question, reply_markup=reply_markup)
-    else:
-        update.message.reply_text("No quizzes available!")
-
-def auto_generate_quiz(update, context):
-    quiz = generate_static_question()
-    options = quiz["options"]
-
-    keyboard = [[InlineKeyboardButton(opt, callback_data=f"quiz_{i}") for i, opt in enumerate(options)]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    context.user_data["quiz_answer"] = quiz["correct_index"]
-    update.message.reply_text(quiz["question"], reply_markup=reply_markup)
+    # Send first question
+    question = questions[0]
+    keyboard = [[InlineKeyboardButton(opt, callback_data=f"answer_{idx}") for idx, opt in enumerate(question["options"])]]
+    await update.callback_query.message.reply_text(
+        language["question_prompt"].format(question=question["text"]),
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
