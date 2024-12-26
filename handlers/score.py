@@ -19,3 +19,23 @@ def view_scores(update, context):
         leaderboard += f"{i}. {username or 'Anonymous'} - {score} points\n"
 
     update.message.reply_text(leaderboard, parse_mode=ParseMode.HTML)
+
+
+
+async def display_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    conn = get_db_connection()
+    cursor = conn.execute('''
+        SELECT user_id, SUM(score) as total_score 
+        FROM scores 
+        GROUP BY user_id 
+        ORDER BY total_score DESC 
+        LIMIT 10
+    ''')
+    leaderboard = cursor.fetchall()
+    conn.close()
+
+    message = "🏆 Leaderboard:\n\n"
+    for rank, row in enumerate(leaderboard, start=1):
+        message += f"{rank}. User {row['user_id']}: {row['total_score']} points\n"
+
+    await update.message.reply_text(message)
