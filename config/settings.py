@@ -1,3 +1,4 @@
 BOT_TOKEN = "8111109679:AAGCUSRk5Hn3Tc0kd1BQ4Ux3sDworaLBujw"
+SUPPORTED_LANGUAGES = ["en", "hi"]
 DEFAULT_LANGUAGE = "en"
-REPORTS_DIR = "data/reports/"
+DB_PATH = "database/db.sqlite3"
