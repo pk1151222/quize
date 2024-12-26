@@ -9,3 +9,15 @@ async def feedback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn.close()
 
     await update.message.reply_text("Thank you for your feedback!")
+
+def initialize_database():
+    conn = get_db_connection()
+    conn.executescript('''
+    CREATE TABLE IF NOT EXISTS feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        feedback TEXT
+    );
+    ''')
+    conn.commit()
+    conn.close()
