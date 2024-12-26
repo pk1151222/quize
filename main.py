@@ -1,35 +1,24 @@
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
-from handlers.quiz import start_quiz, auto_generate_quiz
-from analytics.charts import send_chart
-from handlers.score import view_scores
-from handlers.report import generate_report
-from handlers.settings import language, set_language
-
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 from config.settings import BOT_TOKEN
-from database.db import setup_db
+from handlers.onboarding import start
+from handlers.quiz import handle_quiz
+from handlers.user_quiz import create_quiz
+from handlers.report import generate_report
+from handlers.notifications import send_reminders
 
 def main():
-    # Set up database tables
-    setup_db()
-
     # Initialize the bot
-    updater = Updater(BOT_TOKEN, use_context=True)
-    dp = updater.dispatcher
+    app = Application.builder().token(BOT_TOKEN).build()
 
-    # Command Handlers
-    dp.add_handler(CommandHandler("start", start_quiz))
-    dp.add_handler(CommandHandler("auto_quiz", auto_generate_quiz))
-    dp.add_handler(CommandHandler("scores", view_scores))
-    dp.add_handler(CommandHandler("chart", send_chart))
-    dp.add_handler(CommandHandler("generate_report", generate_report))
-    dp.add_handler(CommandHandler("language", language))
+    # Register handlers
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(handle_quiz, pattern="^quiz_"))
+    app.add_handler(CallbackQueryHandler(create_quiz, pattern="^create_quiz$"))
+    app.add_handler(CommandHandler("report", generate_report))
+    app.add_handler(CommandHandler("reminders", send_reminders))
 
-    # Callback Query Handlers
-    dp.add_handler(CallbackQueryHandler(set_language, pattern="^lang_"))
-
-    # Start the bot
-    updater.start_polling()
-    updater.idle()
+    # Start polling
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
