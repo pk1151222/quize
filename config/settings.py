@@ -1,4 +1,4 @@
-BOT_TOKEN = "8111109679:AAGCUSRk5Hn3Tc0kd1BQ4Ux3sDworaLBujw"
+BOT_TOKEN = "save bot token here"
 SUPPORTED_LANGUAGES = ["en", "hi"]
 DEFAULT_LANGUAGE = "en"
 DB_PATH = "database/db.sqlite3"
