@@ -8,11 +8,14 @@ from handlers.notifications import send_reminders
 from database.db import initialize_database
 from handlers.score import display_leaderboard
 from handlers.feedback import feedback 
+from handlers.gamification import check_rewards
+from utils.scheduler import start_scheduler
+
 
 def main():
     # Initialize the database
     initialize_database()
-
+    start_scheduler()
     # Existing bot setup and handlers...
 
     # Initialize the bot
@@ -26,6 +29,10 @@ def main():
     app.add_handler(CommandHandler("reminders", send_reminders))
     app.add_handler(CommandHandler("leaderboard", display_leaderboard))
     app.add_handler(CommandHandler("feedback", feedback))
+    app.add_handler(CommandHandler("rewards", check_rewards))
+    
+    
+    
     # Start polling
 
     app.run_polling()
