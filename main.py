@@ -5,8 +5,14 @@ from handlers.quiz import handle_quiz
 from handlers.user_quiz import create_quiz
 from handlers.report import generate_report
 from handlers.notifications import send_reminders
+from database.db import initialize_database
 
 def main():
+    # Initialize the database
+    initialize_database()
+
+    # Existing bot setup and handlers...
+
     # Initialize the bot
     app = Application.builder().token(BOT_TOKEN).build()
 
