@@ -6,6 +6,8 @@ from handlers.user_quiz import create_quiz
 from handlers.report import generate_report
 from handlers.notifications import send_reminders
 from database.db import initialize_database
+from handlers.score import display_leaderboard
+from handlers.feedback import feedback 
 
 def main():
     # Initialize the database
@@ -22,8 +24,10 @@ def main():
     app.add_handler(CallbackQueryHandler(create_quiz, pattern="^create_quiz$"))
     app.add_handler(CommandHandler("report", generate_report))
     app.add_handler(CommandHandler("reminders", send_reminders))
-
+    app.add_handler(CommandHandler("leaderboard", display_leaderboard))
+    app.add_handler(CommandHandler("feedback", feedback))
     # Start polling
+
     app.run_polling()
 
 if __name__ == "__main__":
